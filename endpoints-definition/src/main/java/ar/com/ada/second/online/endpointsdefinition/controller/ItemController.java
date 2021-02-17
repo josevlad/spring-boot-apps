@@ -99,4 +99,54 @@ public class ItemController {
                 ? ResponseEntity.noContent().build() // 204
                 : ResponseEntity.badRequest().body(itemNotFound); // 400
     }
+
+    @PutMapping({ "/{itemId}", "/{itemId}/" })
+    public ResponseEntity putItemByIdMethod(@Valid @RequestBody ItemDTO itemData, @PathVariable Long itemId) {
+
+        Map<String, String> itemNotFound = new HashMap<>();
+        itemNotFound.put("error", HttpStatus.BAD_REQUEST.toString());
+        itemNotFound.put("message", "item id not exist");
+
+        ItemDTO itemById = items.stream()
+                .filter(item -> item.getId().equals(itemId))
+                .peek(item -> {
+                    item.setName(itemData.getName());
+                    item.setDescription(itemData.getDescription());
+                    item.setNumberBarcode(itemData.getNumberBarcode());
+                })
+                .findFirst()
+                .orElse(null);
+
+        return (itemById != null)
+                ? ResponseEntity.ok().body(itemById)
+                : ResponseEntity.badRequest().body(itemNotFound);
+    }
+
+    @PatchMapping({ "/{itemId}", "/{itemId}/" })
+    public ResponseEntity patchItemByIdMethod(@RequestBody ItemDTO itemData, @PathVariable Long itemId) {
+
+        Map<String, String> itemNotFound = new HashMap<>();
+        itemNotFound.put("error", HttpStatus.BAD_REQUEST.toString());
+        itemNotFound.put("message", "item id not exist");
+
+        ItemDTO itemById = items.stream()
+                .filter(item -> item.getId().equals(itemId))
+                .peek(item -> {
+                    // "   hola mundo   ".trim() => "hola mundo"
+                    if (itemData.getName() != null && !itemData.getName().trim().equals(""))
+                        item.setName(itemData.getName());
+
+                    if (itemData.getDescription() != null && !itemData.getDescription().trim().equals(""))
+                        item.setDescription(itemData.getDescription());
+
+                    if (itemData.getNumberBarcode() != null)
+                        item.setNumberBarcode(itemData.getNumberBarcode());
+                })
+                .findFirst()
+                .orElse(null);
+
+        return (itemById != null)
+                ? ResponseEntity.ok().body(itemById)
+                : ResponseEntity.badRequest().body(itemNotFound);
+    }
 }
