@@ -1,15 +1,32 @@
 package ar.com.ada.second.tdvr.controller;
 
+import ar.com.ada.second.tdvr.model.dto.ArtistDTO;
+import ar.com.ada.second.tdvr.service.ArtistService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
 @RestController
-@RequestMapping(value = "artist")
+@RequestMapping(value = "artists")
 public class ArtistController {
+
+    @Autowired
+    private ArtistService artistService;
 
     @GetMapping({ "/", "" })
     public ResponseEntity getArtistsMethod() {
-        return null;
+        // se llama al servicio y se le pide el listado de artistas
+        List<ArtistDTO> artists = artistService.getAll();
+
+        // se crea el response request
+        return ResponseEntity
+                .ok()
+                .body(artists);
     }
 
     @GetMapping({ "/{id}", "/{id}/" })
@@ -18,8 +35,15 @@ public class ArtistController {
     }
 
     @PostMapping({ "/", "" })
-    public ResponseEntity postArtistMethod() {
-        return null;
+    public ResponseEntity postArtistMethod(@Valid @RequestBody ArtistDTO dto) throws URISyntaxException {
+        // se llama al servicio y se le pide que guarde el artista
+        ArtistDTO newArtist = artistService.createNew(dto);
+
+        URI uri = new URI("/artists/" + newArtist.getId());
+
+        return ResponseEntity
+                .created(uri)
+                .body(newArtist);
     }
 
     @PutMapping({ "/{id}", "/{id}/" })

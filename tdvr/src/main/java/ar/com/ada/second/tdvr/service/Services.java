@@ -4,7 +4,38 @@ import java.util.List;
 
 public interface Services<T> {
 
-    T save(T dto);
+    /**
+     *
+     * @param dto
+     * @return
+     */
+    T createNew(T dto);
+
+    /**
+     *
+     * @return
+     */
     List<T> getAll();
-    Boolean remove(Long id);
+
+    /**
+     *
+     * @param id
+     * @return
+     */
+    T getById(Long id);
+
+    /**
+     *
+     * @param dto
+     * @param id
+     * @return
+     */
+    T update(T dto, Long id);
+
+    /**
+     *
+     * @param id
+     */
+    void remove(Long id);
+
 }
