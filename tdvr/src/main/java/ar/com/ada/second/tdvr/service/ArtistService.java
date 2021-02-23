@@ -1,6 +1,7 @@
 package ar.com.ada.second.tdvr.service;
 
 
+import ar.com.ada.second.tdvr.component.BusinessLogicExceptionComponent;
 import ar.com.ada.second.tdvr.model.dto.ArtistDTO;
 import ar.com.ada.second.tdvr.model.entity.Artist;
 import ar.com.ada.second.tdvr.model.mapper.ArtistMapper;
@@ -10,11 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ArtistService implements Services<ArtistDTO> {
 
     private ArtistMapper artistMapper = ArtistMapper.MAPPER;
+
+    @Autowired
+    private BusinessLogicExceptionComponent logicExceptionComponent;
 
     @Autowired
     private AvoidingMappingContext context;
@@ -64,7 +69,30 @@ public class ArtistService implements Services<ArtistDTO> {
 
     @Override
     public ArtistDTO getById(Long id) {
-        return null;
+
+
+        Optional<Artist> artistOptional = artistRepository.findById(id);
+
+        Artist artist = artistOptional
+                .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Artist", id));
+
+        ArtistDTO artistDTO = artistMapper.toDTO(artist, context);
+
+        return artistDTO;
+
+        /*
+        Optional<Artist> artistOptional = artistRepository.findById(id);
+
+        if (artistOptional.isPresent()) {
+            Artist artist = artistOptional.get();
+
+            ArtistDTO artistById = artistMapper.toDTO(artist, context);
+
+            return artistById;
+        } else {
+            throw logicExceptionComponent.getExceptionEntityNotFound("Artist", id);
+        }
+        */
     }
 
     @Override

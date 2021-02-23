@@ -30,8 +30,13 @@ public class ArtistController {
     }
 
     @GetMapping({ "/{id}", "/{id}/" })
-    public ResponseEntity getArtistByIdMethod() {
-        return null;
+    public ResponseEntity getArtistByIdMethod(@PathVariable Long id) {
+
+        ArtistDTO byId = artistService.getById(id);
+
+        return ResponseEntity
+                .ok()
+                .body(byId);
     }
 
     @PostMapping({ "/", "" })
