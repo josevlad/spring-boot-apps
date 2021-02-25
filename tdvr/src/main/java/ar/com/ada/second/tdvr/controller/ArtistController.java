@@ -51,18 +51,28 @@ public class ArtistController {
                 .body(newArtist);
     }
 
-    @PutMapping({ "/{id}", "/{id}/" })
-    public ResponseEntity putArtistByIdMethod() {
-        return null;
-    }
+//    @PutMapping({ "/{id}", "/{id}/" })
+//    public ResponseEntity putArtistByIdMethod() {
+//        return null;
+//    }
 
     @PatchMapping({ "/{id}", "/{id}/" })
-    public ResponseEntity patchArtistByIdMethod() {
-        return null;
+    public ResponseEntity patchArtistByIdMethod(@RequestBody ArtistDTO dto, @PathVariable Long id) {
+
+        ArtistDTO artisUpdated = artistService.update(dto, id);
+
+        return ResponseEntity
+                .ok()
+                .body(artisUpdated);
     }
 
     @DeleteMapping({ "/{id}", "/{id}/" })
-    public ResponseEntity deleteArtistByIdMethod() {
-        return null;
+    public ResponseEntity deleteArtistByIdMethod(@PathVariable Long id) {
+
+        artistService.remove(id);
+
+        return ResponseEntity
+                .noContent()
+                .build();
     }
 }

@@ -21,4 +21,18 @@ public class BusinessLogicExceptionComponent {
                 entityError
         );
     }
+
+    public RuntimeException getExceptionEntityEmptyValues(String entity) {
+
+        EntityError entityError = new EntityError(
+                entity,
+                "cannot update the entity with null or empty values"
+        );
+
+        return new BusinessLogicException(
+                "Entity with invalid data",
+                HttpStatus.BAD_REQUEST,
+                entityError
+        );
+    }
 }

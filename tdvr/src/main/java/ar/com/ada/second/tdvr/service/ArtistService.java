@@ -97,11 +97,45 @@ public class ArtistService implements Services<ArtistDTO> {
 
     @Override
     public ArtistDTO update(ArtistDTO dto, Long id) {
-        return null;
+        // verifico si el id existe en la base de datos
+        Optional<Artist> artistOptional = artistRepository.findById(id);
+
+        Artist artistById = artistOptional
+                .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Artist", id));
+
+        if (dto.hasNullOrEmptyAttributes())
+            throw logicExceptionComponent.getExceptionEntityEmptyValues("Artist");
+
+        if (!artistById.getName().equals(dto.getName()))
+            artistById.setName(dto.getName());
+
+        artistRepository.save(artistById);
+
+        ArtistDTO artistUpdated = artistMapper.toDTO(artistById, context);
+
+        return artistUpdated;
     }
 
     @Override
     public void remove(Long id) {
+        Optional<Artist> artistByIdToDelete = artistRepository.findById(id);
 
+        Artist artist = artistByIdToDelete
+                .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Artist", id));
+
+        artistRepository.deleteById(id);
+    }
+
+    public ArtistDTO removeById(Long id) {
+        Optional<Artist> artistByIdToDelete = artistRepository.findById(id);
+
+        Artist artist = artistByIdToDelete
+                .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Artist", id));
+
+        artistRepository.delete(artist);
+
+        ArtistDTO artistDeleted = artistMapper.toDTO(artist, context);
+
+        return artistDeleted;
     }
 }
