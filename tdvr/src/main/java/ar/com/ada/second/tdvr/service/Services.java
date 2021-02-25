@@ -2,7 +2,7 @@ package ar.com.ada.second.tdvr.service;
 
 import java.util.List;
 
-public interface Services<T> {
+public interface Services<T, E> {
 
     /**
      *
@@ -37,5 +37,12 @@ public interface Services<T> {
      * @param id
      */
     void remove(Long id);
+
+    /**
+     *
+     * @param entity
+     * @param dto
+     */
+    void mergeData(E entity, T dto);
 
 }

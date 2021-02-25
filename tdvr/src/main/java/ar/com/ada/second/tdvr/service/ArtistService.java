@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ArtistService implements Services<ArtistDTO> {
+public class ArtistService implements Services<ArtistDTO, Artist> {
 
     private ArtistMapper artistMapper = ArtistMapper.MAPPER;
 
@@ -103,11 +103,7 @@ public class ArtistService implements Services<ArtistDTO> {
         Artist artistById = artistOptional
                 .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Artist", id));
 
-        if (dto.hasNullOrEmptyAttributes())
-            throw logicExceptionComponent.getExceptionEntityEmptyValues("Artist");
-
-        if (!artistById.getName().equals(dto.getName()))
-            artistById.setName(dto.getName());
+        mergeData(artistById, dto);
 
         artistRepository.save(artistById);
 
@@ -124,6 +120,18 @@ public class ArtistService implements Services<ArtistDTO> {
                 .orElseThrow(() -> logicExceptionComponent.getExceptionEntityNotFound("Artist", id));
 
         artistRepository.deleteById(id);
+    }
+
+    @Override
+    public void mergeData(Artist entity, ArtistDTO dto) {
+        if (dto.hasNullOrEmptyAttributes())
+            throw logicExceptionComponent.getExceptionEntityEmptyValues("Artist");
+
+        if (!entity.getName().equals(dto.getName()))
+            entity.setName(dto.getName());
+
+        //if (!entity.getSurname().equals(dto.getSurname()))
+            //entity.setSurname(dto.getSurname());
     }
 
     public ArtistDTO removeById(Long id) {
