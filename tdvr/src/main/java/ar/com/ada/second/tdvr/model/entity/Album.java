@@ -1,6 +1,5 @@
 package ar.com.ada.second.tdvr.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.persistence.*;

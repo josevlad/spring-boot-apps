@@ -44,7 +44,7 @@ public class AlbumDTO implements Serializable {
 
     public Boolean hasNullOrEmptyAttributes() {
         return title == null || title.trim().isEmpty()
-                || released == null || artist == null;
+                || released == null;
     }
 }
 
