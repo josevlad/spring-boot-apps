@@ -9,6 +9,8 @@ public class YearAttributeConverter implements AttributeConverter<Year, Short> {
 
     @Override
     public Short convertToDatabaseColumn(Year year) {
+        // Short.valueOf(year.toString());
+
         return year != null
                 ? (short) year.getValue()
                 : null;

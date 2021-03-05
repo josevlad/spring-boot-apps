@@ -10,9 +10,9 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @Getter
 @Setter
+@ToString
 @Entity
 @Table(name = "Album")
 public class Album implements Serializable {
