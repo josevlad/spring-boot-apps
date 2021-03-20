@@ -1,0 +1,110 @@
+package ar.com.ada.second.springboottests.service;
+
+import ar.com.ada.second.springboottests.exception.BusinessLogicException;
+import ar.com.ada.second.springboottests.model.dto.ProductDTO;
+import ar.com.ada.second.springboottests.model.entity.Product;
+import ar.com.ada.second.springboottests.model.mapper.AvoidingMappingContext;
+import ar.com.ada.second.springboottests.model.repository.ProductRepository;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.springframework.boot.test.context.SpringBootTest;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
+
+@SpringBootTest
+class ProductServicesTest {
+
+    @Mock
+    private AvoidingMappingContext context;
+
+    @Mock
+    private ProductRepository productRepository;
+
+    @InjectMocks
+    private ProductServices productServices;
+
+    @Test
+    public void whenGetAllThenReturnProductList() {
+        // GIVEN
+        List<Product> productsMock = Arrays.asList(
+                new Product()
+                        .setId(1L)
+                        .setName("CocaCola")
+                        .setDescription("Bebida Gaseosa")
+                        .setPrice(new BigInteger("80")),
+                new Product()
+                        .setId(2L)
+                        .setName("Pepsi")
+                        .setDescription("Otra Bebida Gaseosa")
+                        .setPrice(new BigInteger("90"))
+        );
+        when(productRepository.findAll()).thenReturn(productsMock);
+
+        // WHEN
+        List<ProductDTO> productListDTO = productServices.getAll();
+
+        // THEN
+        assertThat(productListDTO.size()).isEqualTo(2);
+        assertThat(productListDTO.get(0).getName()).isEqualTo("CocaCola");
+        assertThat(productListDTO.get(1).getName()).isEqualTo("Pepsi");
+    }
+
+    @Test
+    public void whenCreateNewReturnProductDtoWhitID() {
+        // GIVEN
+        ProductDTO productToSave = new ProductDTO();
+        when(productRepository.save(any(Product.class)))
+                .thenReturn(new Product().setId(5L));
+
+        // WHEN
+        ProductDTO newProductSaved = productServices.createNew(productToSave);
+
+        // THEN
+        assertThat(newProductSaved.getId()).isEqualTo(5);
+    }
+
+    @Test
+    public void whenGetByIdReturnProductDtoWhitID() {
+        // GIVEN
+        Long id = 8L;
+        when(productRepository.findById(any(Long.class)))
+                .thenReturn(Optional.of(new Product().setId(8L)));
+
+        // WHEN
+        ProductDTO byId = productServices.getById(id);
+
+        // THEN
+        assertThat(byId.getId()).isEqualTo(8L);
+    }
+
+    @Test
+    public void whenGetByIdReturnOptionalNull() {
+        // GIVEN
+        Long id = 8L;
+        when(productRepository.findById(any(Long.class)))
+                .thenReturn(Optional.empty());
+
+        // WHEN
+        Throwable throwable = assertThrows(Throwable.class, () ->
+            productServices.getById(id)
+        );
+
+        // THEN
+        assertThat(throwable.getMessage())
+                .isEqualTo("Entity does not exist");
+    }
+
+    // getById
+    // update
+    // remove
+    // mergeData
+}
