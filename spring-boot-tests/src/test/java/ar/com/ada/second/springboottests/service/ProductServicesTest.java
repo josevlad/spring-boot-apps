@@ -1,6 +1,8 @@
 package ar.com.ada.second.springboottests.service;
 
+import ar.com.ada.second.springboottests.component.BusinessLogicExceptionComponent;
 import ar.com.ada.second.springboottests.exception.BusinessLogicException;
+import ar.com.ada.second.springboottests.exception.EntityError;
 import ar.com.ada.second.springboottests.model.dto.ProductDTO;
 import ar.com.ada.second.springboottests.model.entity.Product;
 import ar.com.ada.second.springboottests.model.mapper.AvoidingMappingContext;
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -16,7 +19,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -28,6 +31,9 @@ class ProductServicesTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private BusinessLogicExceptionComponent logicExceptionComponent;
 
     @InjectMocks
     private ProductServices productServices;
@@ -93,18 +99,26 @@ class ProductServicesTest {
         when(productRepository.findById(any(Long.class)))
                 .thenReturn(Optional.empty());
 
+        BusinessLogicException logicException = new BusinessLogicException(
+                "Entity does not exist",
+                HttpStatus.BAD_REQUEST,
+                new EntityError()
+        );
+
+        when(logicExceptionComponent.getExceptionEntityNotFound(any(String.class), any(Long.class)))
+                .thenReturn(logicException);
+
         // WHEN
-        Throwable throwable = assertThrows(Throwable.class, () ->
-            productServices.getById(id)
+        RuntimeException runtimeException = assertThrows(
+                RuntimeException.class,
+                () -> productServices.getById(id)
         );
 
         // THEN
-        assertThat(throwable.getMessage())
+        assertThat(runtimeException.getMessage())
                 .isEqualTo("Entity does not exist");
     }
 
-    // getById
     // update
     // remove
-    // mergeData
 }

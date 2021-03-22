@@ -74,7 +74,7 @@ class ProductRepositoryTest {
 
         // THEN
         assertEquals(all instanceof Collection, true);
-        assertThat(all).hasSize(2);
+        assertThat(all).hasSize(3);
     }
 
     //UPDATE
